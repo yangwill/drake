@@ -427,6 +427,26 @@ class PiecewisePolynomial final : public PiecewiseTrajectory<T> {
    */
   PiecewisePolynomial<T> derivative(int derivative_order = 1) const;
 
+  /**
+   * Returns a %PiecewisePolynomial with only a single segment which is the
+   * specified derivative of the segment where t is valid. Any rules
+   * or limitations of Polynomial::derivative() also apply to this function.
+   *
+   * @param t The time around where the derivative will be evaluated. This
+   *        will only take the derivative of the segment where this time is
+   *        valid.
+   * @param derivative_order The order of the derivative, namely, if
+   *        `derivative_order` = n, the n'th derivative of the polynomial will
+   *        be returned.
+   * @warning In the event that t is exactly at the break. This will evaluate
+   * the derivative of the segment that has the earlier start time.
+   * @return
+   */
+  PiecewisePolynomial<T> derivative(double t, int derivative_order = 1) const {
+    return this->slice(this->get_segment_index(t), 1)
+        .derivative(derivative_order);
+  }
+
   std::unique_ptr<Trajectory<T>> MakeDerivative(
       int derivative_order = 1) const override {
     return derivative(derivative_order).Clone();
